@@ -56,16 +56,16 @@ app.post("/api/generate", upload.single("file"), async (req, res) => {
     await deleteImage(originalname!);
     await deleteImage(combinedFile!);
     console.log("fetching generated image");
-    const replicateImage = await fetchImage(output[0]);
-    console.log("adding text");
-    const finalResult = await finaliseProcess(replicateImage, "card", "12");
-    await deleteImage(replicateImage);
-    console.log("uploading file to firebase");
-    const firebaseUrl = await uploadFileToFirebase(finalResult);
-    await deleteImage(finalResult);
-    console.log("====================job done====================");
+    // const replicateImage = await fetchImage(output[0]);
+    // console.log("adding text");
+    // const finalResult = await finaliseProcess(replicateImage, "card", "12");
+    // await deleteImage(replicateImage);
+    // console.log("uploading file to firebase");
+    // const firebaseUrl = await uploadFileToFirebase(finalResult);
+    // // await deleteImage(finalResult);
+    // console.log("====================job done====================");
     return res.status(200).json({
-      url: firebaseUrl,
+      url: output[0],
     });
   } catch (error: any) {
     console.trace(error.message);
