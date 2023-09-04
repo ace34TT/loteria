@@ -19,7 +19,7 @@ export const combineImages = async (userImage: string) => {
         { input: path.resolve(tempDirectory, resizedFile), gravity: "centre" },
       ])
       .toFile(path.resolve(tempDirectory, filename));
-    await deleteImage(path.resolve(tempDirectory, userImage));
+    // await deleteImage(path.resolve(tempDirectory, userImage));
     await deleteImage(resizedFile);
     return filename;
   } catch (err) {
@@ -27,20 +27,29 @@ export const combineImages = async (userImage: string) => {
     // handle the error appropriately
   }
 };
-export const finaliseProcess = async () => {
+export const finaliseProcess = async (
+  filename: string,
+  text: string,
+  number: string
+) => {
   registerFont(path.resolve(assetsDirectory + "/futur.ttf"), {
     family: "Futura",
   });
   const canvas = createCanvas(1024, 1024);
   const ctx = canvas.getContext("2d");
-  loadImage(path.resolve(tempDirectory, "out.png")).then((image) => {
-    ctx.drawImage(image, 0, 0, 1024, 1024);
-    ctx.font = "30px Futura";
-    ctx.fillText("Image caption", 50, 100);
-    const out = fs.createWriteStream(
-      path.resolve(tempDirectory, "f_" + generateRandomString(10) + ".png")
-    );
-    const stream = canvas.createPNGStream();
-    stream.pipe(out);
-  });
+  const image = await loadImage(path.resolve(tempDirectory, filename));
+  ctx.drawImage(image, 0, 0, 1024, 1024);
+  ctx.font = "64px Futura";
+  ctx.fillStyle = "#424242";
+  //
+  ctx.fillText(number, 80, 128);
+  //
+  const textWidth = ctx.measureText(text).width;
+  ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height - 68);
+  //
+  const result = "fr_" + generateRandomString(10) + ".png";
+  const out = fs.createWriteStream(path.resolve(tempDirectory, result));
+  const stream = canvas.createPNGStream();
+  stream.pipe(out);
+  return result;
 };
