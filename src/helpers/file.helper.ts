@@ -23,29 +23,6 @@ export const generateRandomString = (length: number) => {
   return result;
 };
 
-export const combineImages = async (userImage: string) => {
-  try {
-    //
-    const resizedFile = "r_" + generateRandomString(10) + ".jpg";
-    await sharp(path.resolve(tempDirectory, userImage))
-      .resize(559, 927, { fit: "cover" })
-      .toFile(path.resolve(tempDirectory, resizedFile));
-    //
-    const filename = "c_" + generateRandomString(10) + ".jpg";
-    await sharp(path.resolve(tempDirectory, "frame.jpg"))
-      .composite([
-        { input: path.resolve(tempDirectory, resizedFile), gravity: "centre" },
-      ])
-      .toFile(path.resolve(tempDirectory, filename));
-    await deleteImage(path.resolve(tempDirectory, userImage));
-    await deleteImage(resizedFile);
-    return filename;
-  } catch (err) {
-    console.error(err);
-    // handle the error appropriately
-  }
-};
-
 export const deleteImage = async (filename: string) => {
   console.log("deleting : " + path.resolve(tempDirectory, filename));
   fs.unlinkSync(path.resolve(tempDirectory, filename));
