@@ -46,8 +46,6 @@ export const combineImages = async (userImage: string) => {
   }
 };
 
-export const;
-
 export const deleteImage = async (filename: string) => {
   console.log("deleting : " + path.resolve(tempDirectory, filename));
   fs.unlinkSync(path.resolve(tempDirectory, filename));
