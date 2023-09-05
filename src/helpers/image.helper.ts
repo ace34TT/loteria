@@ -32,9 +32,12 @@ export const finaliseProcess = async (
   text: string,
   number: string
 ) => {
-  registerFont(path.resolve(assetsDirectory + "/futur.ttf"), {
-    family: "Futura",
-  });
+  registerFont(
+    path.resolve(assetsDirectory + "/futura/futura medium condensed bt.ttf"),
+    {
+      family: "Futura",
+    }
+  );
   const canvas = createCanvas(1024, 1024);
   const ctx = canvas.getContext("2d");
   const image = await loadImage(path.resolve(tempDirectory, filename));

@@ -51,14 +51,15 @@ app.post("/api/generate", upload.single("file"), async (req, res) => {
       "zeke/loteria:03843f4992ae68b5721d7e36473f7b66872769567652777fd62ee16bd806db50",
       {
         input: {
-          // mask: "https://e565-197-158-81-251.ngrok-free.app/api/download?filename=mask.jpg",
-          // image: `https://e565-197-158-81-251.ngrok-free.app/api/download?filename=${combinedFile}`,
+          // mask: "https://5873-197-158-81-251.ngrok-free.app/api/download?filename=mask.jpg",
+          // image: `https://5873-197-158-81-251.ngrok-free.app/api/download?filename=${combinedFile}`,
           mask: "https://backend-replicate.onrender.com/api/download?filename=mask.jpg",
           image: `https://backend-replicate.onrender.com/api/download?filename=${combinedFile}`,
           negative_prompt: "letter , words , number , text",
           width: 512,
           height: 512,
           prompt: prompt,
+          prompt_strength: 0.6,
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
