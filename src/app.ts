@@ -53,7 +53,7 @@ app.post("/api/generate", upload.single("file"), async (req, res) => {
         input: {
           // mask: "https://e565-197-158-81-251.ngrok-free.app/api/download?filename=mask.jpg",
           // image: `https://e565-197-158-81-251.ngrok-free.app/api/download?filename=${combinedFile}`,
-          mask: "https://backend-replicate.onrender.com/api/download?filename=frame.jpg",
+          mask: "https://backend-replicate.onrender.com/api/download?filename=mask.jpg",
           image: `https://backend-replicate.onrender.com/api/download?filename=${combinedFile}`,
           negative_prompt: "letter , words , number , text",
           width: 512,
