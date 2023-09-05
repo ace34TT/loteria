@@ -10,11 +10,11 @@ export const combineImages = async (userImage: string) => {
     //
     const resizedFile = "r_" + generateRandomString(10) + ".jpg";
     await sharp(path.resolve(tempDirectory, userImage))
-      .resize(559, 927, { fit: "cover" })
+      .resize(550, 918, { fit: "cover" })
       .toFile(path.resolve(tempDirectory, resizedFile));
     //
     const filename = "c_" + generateRandomString(10) + ".jpg";
-    await sharp(path.resolve(tempDirectory, "frame.jpg"))
+    await sharp(path.resolve(tempDirectory, "mask.jpg"))
       .composite([
         { input: path.resolve(tempDirectory, resizedFile), gravity: "centre" },
       ])
