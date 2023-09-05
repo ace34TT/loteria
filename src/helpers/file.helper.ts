@@ -36,7 +36,7 @@ export const fetchImage = async (url: string) => {
   if (!fs.existsSync(tempDirectory)) {
     fs.mkdirSync(tempDirectory, { recursive: true });
   }
-  const fileName = "ft_" + generateRandomString(10) + ".png";
+  const fileName = "generated_" + generateRandomString(10) + ".png";
   const filePath = path.resolve(`${tempDirectory}/${fileName}`);
   const writer = fs.createWriteStream(filePath);
   response.data.pipe(writer);
@@ -44,4 +44,12 @@ export const fetchImage = async (url: string) => {
     writer.on("finish", resolve);
     writer.on("error", reject);
   }).then(() => fileName);
+};
+
+export const checkIfExists = (filename: string) => {
+  if (fs.existsSync(path.resolve(tempDirectory, filename))) {
+    console.log("The file exists.");
+  } else {
+    console.log("The file does not exist.");
+  }
 };

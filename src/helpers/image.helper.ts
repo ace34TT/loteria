@@ -8,12 +8,12 @@ const assetsDirectory = path.resolve(__dirname, "../assets/");
 export const combineImages = async (userImage: string) => {
   try {
     //
-    const resizedFile = "r_" + generateRandomString(10) + ".jpg";
+    const resizedFile = "resized _" + generateRandomString(10) + ".jpg";
     await sharp(path.resolve(tempDirectory, userImage))
-      .resize(550, 918, { fit: "cover" })
+      .resize(560, 950, { fit: "cover" })
       .toFile(path.resolve(tempDirectory, resizedFile));
     //
-    const filename = "c_" + generateRandomString(10) + ".jpg";
+    const filename = "composited_" + generateRandomString(10) + ".jpg";
     await sharp(path.resolve(tempDirectory, "mask.jpg"))
       .composite([
         { input: path.resolve(tempDirectory, resizedFile), gravity: "centre" },
@@ -42,14 +42,34 @@ export const finaliseProcess = async (
   ctx.font = "64px Futura";
   ctx.fillStyle = "#424242";
   //
-  ctx.fillText(number, 80, 128);
+  ctx.fillText(number, 250, 128);
   //
   const textWidth = ctx.measureText(text).width;
   ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height - 68);
   //
-  const result = "fr_" + generateRandomString(10) + ".png";
+  const result = "watermarked_" + generateRandomString(10) + ".png";
   const out = fs.createWriteStream(path.resolve(tempDirectory, result));
   const stream = canvas.createPNGStream();
-  stream.pipe(out);
-  return result;
+  return new Promise((resolve, reject) => {
+    out.on("finish", () => {
+      resolve(result);
+    });
+    out.on("error", reject);
+    stream.pipe(out);
+  });
+};
+
+export const cropAndCompress = async (filename: string) => {
+  try {
+    const name = "compressed_" + generateRandomString(10) + ".jpg";
+    const outputFile = path.resolve(tempDirectory, name);
+    await sharp(path.resolve(tempDirectory, filename))
+      .extract({ left: 188, top: 0, width: 647, height: 1024 })
+      .jpeg({ quality: 80 })
+      .toFile(outputFile);
+    console.log("Image processed successfully!");
+    return name;
+  } catch (err) {
+    console.error(err);
+  }
 };

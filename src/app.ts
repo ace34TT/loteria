@@ -1,9 +1,18 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { replicate } from "./configs/replicate.config";
-import { deleteImage, fetchImage, getFilePath } from "./helpers/file.helper";
+import {
+  checkIfExists,
+  deleteImage,
+  fetchImage,
+  getFilePath,
+} from "./helpers/file.helper";
 import upload from "./middlewares/multer.middleware";
-import { combineImages, finaliseProcess } from "./helpers/image.helper";
+import {
+  combineImages,
+  cropAndCompress,
+  finaliseProcess,
+} from "./helpers/image.helper";
 import path from "path";
 import { uploadFileToFirebase } from "./services/firebase.service";
 // import Replicate from "replicate";
@@ -38,36 +47,42 @@ app.post("/api/generate", upload.single("file"), async (req, res) => {
     console.log("generating combined file");
     const combinedFile = await combineImages(originalname!);
     console.log("making request");
-    // const output: any = await replicate.run(
-    //   "zeke/loteria:03843f4992ae68b5721d7e36473f7b66872769567652777fd62ee16bd806db50",
-    //   {
-    //     input: {
-    //       mask: "https://e565-197-158-81-251.ngrok-free.app/api/download?filename=frame.jpg",
-    //       image: `https://e565-197-158-81-251.ngrok-free.app/api/download?filename=${combinedFile}`,
-    //       // mask: "https://backend-replicate.onrender.com/api/download?filename=frame.jpg",
-    //       // image: `https://backend-replicate.onrender.com/api/download?filename=${combinedFile}`,
-    //       negative_prompt: "letter , words , number , text",
-    //       width: 512,
-    //       height: 512,
-    //       prompt: prompt,
-    //       num_inference_steps: 30,
-    //       scheduler: "K_EULER",
-    //     },
-    //   }
-    // );
-    // await deleteImage(originalname!);
-    // await deleteImage(combinedFile!);
-    // console.log("fetching generated image");
-    // const replicateImage = await fetchImage(output[0]);
-    // console.log("adding text");
-    // const finalResult = await finaliseProcess(replicateImage, "card", "12");
-    // await deleteImage(replicateImage);
-    // console.log("uploading file to firebase");
-    // const firebaseUrl = await uploadFileToFirebase(finalResult);
-    // // await deleteImage(finalResult);
-    // console.log("====================job done====================");
+    const output: any = await replicate.run(
+      "zeke/loteria:03843f4992ae68b5721d7e36473f7b66872769567652777fd62ee16bd806db50",
+      {
+        input: {
+          mask: "https://e565-197-158-81-251.ngrok-free.app/api/download?filename=mask.jpg",
+          image: `https://e565-197-158-81-251.ngrok-free.app/api/download?filename=${combinedFile}`,
+          // mask: "https://backend-replicate.onrender.com/api/download?filename=frame.jpg",
+          // image: `https://backend-replicate.onrender.com/api/download?filename=${combinedFile}`,
+          negative_prompt: "letter , words , number , text",
+          width: 512,
+          height: 512,
+          prompt: prompt,
+          num_inference_steps: 30,
+          scheduler: "K_EULER",
+        },
+      }
+    );
+    console.log("fetching generated image ");
+    const replicateImage = await fetchImage(output[0]);
+    console.log("adding text");
+    const imageWithText = (await finaliseProcess(
+      replicateImage,
+      req.body.name,
+      req.body.num
+    )) as string;
+    const compressedFile = await cropAndCompress(imageWithText!);
+    console.log("uploading file to firebase", compressedFile);
+    const firebaseUrl = await uploadFileToFirebase(compressedFile!);
+    await deleteImage(originalname!);
+    await deleteImage(combinedFile!);
+    await deleteImage(replicateImage);
+    await deleteImage(imageWithText!);
+    await deleteImage(compressedFile!);
+    console.log("====================job done====================");
     return res.status(200).json({
-      url: "",
+      url: firebaseUrl,
     });
   } catch (error: any) {
     console.trace(error.message);
