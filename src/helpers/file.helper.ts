@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs";
 import sharp from "sharp";
 import axios from "axios";
-const tempDirectory = path.resolve(__dirname, "../images/");
+const tempDirectory = path.resolve(__dirname, "../tmp/");
 export const getFileAsBase64 = (filename: string) => {
   const filePath = path.resolve(tempDirectory, filename);
   console.log(filePath);
@@ -22,11 +22,15 @@ export const generateRandomString = (length: number) => {
   }
   return result;
 };
-export const deleteImage = async (filename: string) => {
-  console.log("deleting : " + path.resolve(tempDirectory, filename));
-  fs.unlinkSync(path.resolve(tempDirectory, filename));
+export const checkIfExists = (filename: string) => {
+  if (fs.existsSync(path.resolve(tempDirectory, filename))) {
+    console.log("The file exists.");
+  } else {
+    console.log("The file does not exist.");
+  }
 };
-export const fetchImage = async (url: string) => {
+//
+export const fetchImage = async (prefix: string, url: string) => {
   const response = await axios.get(url, { responseType: "stream" });
   if (response.status !== 200) {
     throw new Error(
@@ -36,8 +40,8 @@ export const fetchImage = async (url: string) => {
   if (!fs.existsSync(tempDirectory)) {
     fs.mkdirSync(tempDirectory, { recursive: true });
   }
-  const fileName = "generated_" + generateRandomString(10) + ".png";
-  const filePath = path.resolve(`${tempDirectory}/${fileName}`);
+  const fileName = prefix + "_" + generateRandomString(10) + ".png";
+  const filePath = path.resolve(tempDirectory, fileName);
   const writer = fs.createWriteStream(filePath);
   response.data.pipe(writer);
   return new Promise((resolve, reject) => {
@@ -45,11 +49,7 @@ export const fetchImage = async (url: string) => {
     writer.on("error", reject);
   }).then(() => fileName);
 };
-
-export const checkIfExists = (filename: string) => {
-  if (fs.existsSync(path.resolve(tempDirectory, filename))) {
-    console.log("The file exists.");
-  } else {
-    console.log("The file does not exist.");
-  }
+export const deleteImage = async (filename: string) => {
+  console.log("deleting : " + path.resolve(tempDirectory, filename));
+  fs.unlinkSync(path.resolve(tempDirectory, filename));
 };

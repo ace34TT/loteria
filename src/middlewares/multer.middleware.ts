@@ -1,7 +1,7 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-const tempDirectory = path.resolve(__dirname, "../images/");
+const tempDirectory = path.resolve(__dirname, "../tmp/");
 // Empty the directory first
 // fs.readdir(directory, (err, files) => {
 //   if (err) throw err;

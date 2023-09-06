@@ -3,7 +3,7 @@ import fs from "fs";
 import sharp from "sharp";
 import { deleteImage, generateRandomString } from "./file.helper";
 import { createCanvas, loadImage, registerFont } from "canvas";
-const tempDirectory = path.resolve(__dirname, "../images/");
+const tempDirectory = path.resolve(__dirname, "../tmp/");
 const assetsDirectory = path.resolve(__dirname, "../assets/");
 export const combineImages = async (userImage: string) => {
   try {
@@ -61,7 +61,6 @@ export const finaliseProcess = async (
     stream.pipe(out);
   });
 };
-
 export const cropAndCompress = async (filename: string) => {
   try {
     const name = "compressed_" + generateRandomString(10) + ".jpg";
