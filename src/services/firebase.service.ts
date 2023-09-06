@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import path from "path";
-const tempDirectory = path.resolve(__dirname, "../images/");
+const tempDirectory = path.resolve(__dirname, "../tmp/");
 import fs from "fs";
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -21,4 +21,14 @@ export const uploadFileToFirebase = async (filename: string) => {
   await fileRef.makePublic();
   const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileRef.name}`;
   return publicUrl;
+};
+export const deleteFile = async (filename: string) => {
+  try {
+    const bucket = admin.storage().bucket();
+    const file = bucket.file("images/" + filename);
+    await file.delete();
+  } catch (error: any) {
+    console.log(error.message);
+    throw new Error(error.message);
+  }
 };

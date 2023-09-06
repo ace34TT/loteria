@@ -29,6 +29,12 @@ export const checkIfExists = (filename: string) => {
     console.log("The file does not exist.");
   }
 };
+export const getFileName = (url: string) => {
+  const parts = url.split("/");
+  const fileName = parts[parts.length - 1];
+  return fileName;
+};
+
 //
 export const fetchImage = async (prefix: string, url: string) => {
   const response = await axios.get(url, { responseType: "stream" });

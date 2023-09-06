@@ -14,6 +14,9 @@ const tempDirectory = path.resolve(__dirname, "../tmp/");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    if (!fs.existsSync(tempDirectory)) {
+      fs.mkdirSync(tempDirectory, { recursive: true });
+    }
     cb(null, tempDirectory);
   },
   filename: function (req, file, cb) {

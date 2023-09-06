@@ -1,20 +1,7 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import { replicate } from "./configs/replicate.config";
-import {
-  checkIfExists,
-  deleteImage,
-  fetchImage,
-  getFilePath,
-} from "./helpers/file.helper";
-import upload from "./middlewares/multer.middleware";
-import {
-  combineImages,
-  cropAndCompress,
-  finaliseProcess,
-} from "./helpers/image.helper";
+import { getFilePath } from "./helpers/file.helper";
 import path from "path";
-import { uploadFileToFirebase } from "./services/firebase.service";
 import { MainRoutes } from "./routes/main.routes";
 const app = express();
 app.use((_req, res, next) => {
@@ -38,7 +25,6 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 app.use("/api/generate", MainRoutes);
-
 //
 app.get("/api/download", async (req, res) => {
   const filename: string = req.query.filename as string;
@@ -46,5 +32,5 @@ app.get("/api/download", async (req, res) => {
   res.download(file);
 });
 app.use("/api/images", express.static(path.join(__dirname, "assets")));
-
+app.use("/api/tmp/images", express.static(path.join(__dirname, "tmp")));
 export { app };
