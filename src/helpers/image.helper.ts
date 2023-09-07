@@ -28,24 +28,35 @@ export const combineImages = async (userImage: string) => {
   }
 };
 export const combineResultWithModel = async (model: any, subject: string) => {
-  console.log("===============type of model " + typeof model + "============");
+  var numericModel = Number(model);
+  console.log(
+    "===============type of model " +
+      typeof model +
+      " : " +
+      model +
+      "============"
+  );
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
-    .resize(model === "3" ? 1154 : 1124, model === "3" ? 1748 : 1704, {
-      fit: "cover",
-    })
+    .resize(
+      numericModel === 3 ? 1154 : 1124,
+      numericModel === 3 ? 1748 : 1704,
+      {
+        fit: "cover",
+      }
+    )
     .toFile(path.resolve(tempDirectory, resizedFile));
   const filename = "composited_" + generateRandomString(10) + ".jpg";
   await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
     .composite([
       {
         input: path.resolve(tempDirectory, resizedFile),
-        top: model === "3" ? 176 : 203,
-        left: model === "3" ? 177 : 197,
+        top: numericModel === 3 ? 176 : 203,
+        left: numericModel === 3 ? 177 : 197,
       },
     ])
     .toFile(path.resolve(tempDirectory, filename));
-  await deleteImage(path.resolve(tempDirectory, resizedFile));
+  // await deleteImage(path.resolve(tempDirectory, resizedFile));
   return filename;
 };
 export const addText = async (
