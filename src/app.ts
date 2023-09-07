@@ -3,6 +3,11 @@ import bodyParser from "body-parser";
 import { getFilePath } from "./helpers/file.helper";
 import path from "path";
 import { MainRoutes } from "./routes/main.routes";
+import {
+  addText,
+  combineImages,
+  combineResultWithModel,
+} from "./helpers/image.helper";
 const app = express();
 app.use((_req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -19,7 +24,7 @@ app.use((_req, res, next) => {
 app.use(bodyParser.json());
 
 // !
-app.get("/", (req: Request, res: Response) => {
+app.get("/", async (req: Request, res: Response) => {
   return res.json({
     message: "Hello world",
   });
@@ -31,6 +36,7 @@ app.get("/api/download", async (req, res) => {
   const file = await getFilePath(filename);
   res.download(file);
 });
+
 app.use("/api/images", express.static(path.join(__dirname, "assets")));
 app.use("/api/tmp/images", express.static(path.join(__dirname, "tmp")));
 export { app };

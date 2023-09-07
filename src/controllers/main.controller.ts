@@ -158,6 +158,7 @@ export const image2imageHandler = async (req: Request, res: Response) => {
     deleteImage(result);
     return res.status(200).json({ url });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.res });
   }
 };

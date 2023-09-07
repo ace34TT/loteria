@@ -28,14 +28,21 @@ export const combineImages = async (userImage: string) => {
   }
 };
 export const combineResultWithModel = async (model: any, subject: string) => {
+  console.log("===============type of model " + typeof model + "============");
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
-    .resize(1136, 1710, { fit: "cover" })
+    .resize(model === "3" ? 1154 : 1124, model === "3" ? 1748 : 1704, {
+      fit: "cover",
+    })
     .toFile(path.resolve(tempDirectory, resizedFile));
   const filename = "composited_" + generateRandomString(10) + ".jpg";
   await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
     .composite([
-      { input: path.resolve(tempDirectory, resizedFile), gravity: "centre" },
+      {
+        input: path.resolve(tempDirectory, resizedFile),
+        top: model === "3" ? 176 : 203,
+        left: model === "3" ? 177 : 197,
+      },
     ])
     .toFile(path.resolve(tempDirectory, filename));
   await deleteImage(path.resolve(tempDirectory, resizedFile));
@@ -60,10 +67,10 @@ export const addText = async (
   ctx.font = "98px Futura";
   ctx.fillStyle = color;
   //
-  ctx.fillText(number, 350, 350);
+  ctx.fillText(number, 225, 310);
   //
   const textWidth = ctx.measureText(text).width;
-  ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height - 310);
+  ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height - 225);
   //
   const result = "watermarked_" + generateRandomString(10) + ".png";
   const out = fs.createWriteStream(path.resolve(tempDirectory, result));
