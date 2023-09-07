@@ -72,6 +72,8 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
   try {
     const prompt = req.body.prompt;
     const model = req.body.model;
+    const previousResult = req.body.result;
+    if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request :");
     const output_1: any = await replicate.run(
       "stability-ai/sdxl:d830ba5dabf8090ec0db6c10fc862c6eb1c929e1a194a5411852d25fd954ac82",
@@ -119,6 +121,8 @@ export const image2imageHandler = async (req: Request, res: Response) => {
     const prompt = req.body.prompt;
     const model = req.body.model;
     const filename = req.file?.filename;
+    const previousResult = req.body.result;
+    if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request : ", filename);
     const output_1: any = await replicate.run(
       "stability-ai/sdxl:d830ba5dabf8090ec0db6c10fc862c6eb1c929e1a194a5411852d25fd954ac82",
@@ -170,6 +174,9 @@ export const addDetailsHandler = async (req: Request, res: Response) => {
       req.body.num,
       req.body.color,
     ];
+    console.log(image);
+    const previousResult = req.body.result;
+    if (previousResult) deleteFile(getFileName(previousResult));
     const fetchedImage = await fetchImage("firebase_", image);
     const finalResult = (await addText(
       fetchedImage,
@@ -179,7 +186,7 @@ export const addDetailsHandler = async (req: Request, res: Response) => {
     )) as string;
     const url = await uploadFileToFirebase(finalResult);
     const filename = getFileName(image);
-    deleteFile(filename);
+    // deleteFile(filename);
     deleteImage(fetchedImage);
     deleteImage(finalResult);
     return res.status(200).json({ url });

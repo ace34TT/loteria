@@ -56,7 +56,7 @@ export const combineResultWithModel = async (model: any, subject: string) => {
       },
     ])
     .toFile(path.resolve(tempDirectory, filename));
-  // await deleteImage(path.resolve(tempDirectory, resizedFile));
+  await deleteImage(path.resolve(tempDirectory, resizedFile));
   return filename;
 };
 export const addText = async (
