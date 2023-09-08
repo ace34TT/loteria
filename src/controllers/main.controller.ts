@@ -95,7 +95,8 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
     );
     console.log("===> " + output_1[0]);
     const sdxlImage = await fetchImage("sdxl", output_1[0]);
-    console.log("second request : ");
+
+    console.log("second request : " + sdxlImage);
     const output_2: any = await replicate.run(
       "cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003",
       {
@@ -120,7 +121,6 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.res });
   }
 };
-
 export const image2imageHandler = async (req: Request, res: Response) => {
   try {
     const prompt = req.body.prompt;
