@@ -27,15 +27,64 @@ export const combineImages = async (userImage: string) => {
     // handle the error appropriately
   }
 };
+
 export const combineResultWithModel = async (model: any, subject: string) => {
   var numericModel = Number(model);
-  console.log(
-    "===============type of model " +
-      typeof model +
-      " : " +
-      model +
-      "============"
-  );
+
+  const resizedFile = "resized _" + generateRandomString(10) + ".png";
+  await sharp(path.resolve(tempDirectory, subject))
+    .resize(
+      numericModel === 3 ? 1154 : 1124,
+      numericModel === 3 ? 1748 : 1704,
+      {
+        fit: "cover",
+      }
+    )
+    .toFile(path.resolve(tempDirectory, resizedFile));
+  const filename = "composited_" + generateRandomString(10) + ".jpg";
+  await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
+    .composite([
+      {
+        input: path.resolve(tempDirectory, resizedFile),
+        top: numericModel === 3 ? 176 : 203,
+        left: numericModel === 3 ? 177 : 197,
+      },
+    ])
+    .toFile(path.resolve(tempDirectory, filename));
+  await deleteImage(path.resolve(tempDirectory, resizedFile));
+  return filename;
+};
+export const combineResultWithModelWithSmallSize = async (
+  model: any,
+  subject: string
+) => {
+  var numericModel = Number(model);
+  const resizedFile = "resized _" + generateRandomString(10) + ".png";
+  await sharp(path.resolve(tempDirectory, subject))
+    .resize(
+      numericModel === 3 ? 1154 : 1124,
+      numericModel === 3 ? 1748 : 1704,
+      {
+        fit: "cover",
+      }
+    )
+    .toFile(path.resolve(tempDirectory, resizedFile));
+  const filename = "composited_" + generateRandomString(10) + ".jpg";
+  await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
+    .composite([
+      {
+        input: path.resolve(tempDirectory, resizedFile),
+        top: numericModel === 3 ? 176 : 203,
+        left: numericModel === 3 ? 177 : 197,
+      },
+    ])
+    .toFile(path.resolve(tempDirectory, filename));
+  await deleteImage(path.resolve(tempDirectory, resizedFile));
+  return filename;
+};
+export const combineResultWithModel = async (model: any, subject: string) => {
+  var numericModel = Number(model);
+
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
     .resize(
@@ -107,4 +156,38 @@ export const cropAndCompress = async (filename: string) => {
   } catch (err) {
     console.error(err);
   }
+};
+export const finaliseProcess = async (
+  filename: string,
+  text: string,
+  number: string
+) => {
+  registerFont(
+    path.resolve(assetsDirectory + "/futura/futura medium condensed bt.ttf"),
+    {
+      family: "Futura",
+    }
+  );
+  const canvas = createCanvas(1024, 1024);
+  const ctx = canvas.getContext("2d");
+  const image = await loadImage(path.resolve(tempDirectory, filename));
+  ctx.drawImage(image, 0, 0, 1024, 1024);
+  ctx.font = "64px Futura";
+  ctx.fillStyle = "#424242";
+  //
+  ctx.fillText(number, 250, 128);
+  //
+  const textWidth = ctx.measureText(text).width;
+  ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height - 68);
+  //
+  const result = "watermarked_" + generateRandomString(10) + ".png";
+  const out = fs.createWriteStream(path.resolve(tempDirectory, result));
+  const stream = canvas.createPNGStream();
+  return new Promise((resolve, reject) => {
+    out.on("finish", () => {
+      resolve(result);
+    });
+    out.on("error", reject);
+    stream.pipe(out);
+  });
 };
