@@ -8,6 +8,7 @@ import {
   cropAndCompress,
   addText,
   finaliseProcess,
+  combineResultWithModelWithSmallSize,
 } from "../helpers/image.helper";
 import { deleteFile, uploadFileToFirebase } from "../services/firebase.service";
 
@@ -73,6 +74,7 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
     const model = req.body.model;
     const previousResult = req.body.result;
     const fullSize = req.body.fullSize;
+    console.log("=======================>" + fullSize);
     if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request :");
     const output_1: any = await replicate.run(
@@ -104,7 +106,10 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
     );
     console.log("===> " + output_2);
     const remBg = await fetchImage("rem_bg", output_2);
-    const result = await combineResultWithModel(model, remBg);
+    const result =
+      fullSize === "full"
+        ? await combineResultWithModel(model, remBg)
+        : await combineResultWithModelWithSmallSize(model, remBg);
     const url = await uploadFileToFirebase(result);
     deleteImage(sdxlImage);
     deleteImage(remBg);

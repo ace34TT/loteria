@@ -27,10 +27,12 @@ export const combineImages = async (userImage: string) => {
     // handle the error appropriately
   }
 };
-
 export const combineResultWithModel = async (model: any, subject: string) => {
-  var numericModel = Number(model);
+  console.log(
+    "============================full size============================"
+  );
 
+  var numericModel = Number(model);
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
     .resize(
@@ -61,47 +63,16 @@ export const combineResultWithModelWithSmallSize = async (
   var numericModel = Number(model);
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
-    .resize(
-      numericModel === 3 ? 1154 : 1124,
-      numericModel === 3 ? 1748 : 1704,
-      {
-        fit: "cover",
-      }
-    )
+    .resize(654, 1248, {
+      fit: "cover",
+    })
     .toFile(path.resolve(tempDirectory, resizedFile));
   const filename = "composited_" + generateRandomString(10) + ".jpg";
   await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
     .composite([
       {
         input: path.resolve(tempDirectory, resizedFile),
-        top: numericModel === 3 ? 176 : 203,
-        left: numericModel === 3 ? 177 : 197,
-      },
-    ])
-    .toFile(path.resolve(tempDirectory, filename));
-  await deleteImage(path.resolve(tempDirectory, resizedFile));
-  return filename;
-};
-export const combineResultWithModel = async (model: any, subject: string) => {
-  var numericModel = Number(model);
-
-  const resizedFile = "resized _" + generateRandomString(10) + ".png";
-  await sharp(path.resolve(tempDirectory, subject))
-    .resize(
-      numericModel === 3 ? 1154 : 1124,
-      numericModel === 3 ? 1748 : 1704,
-      {
-        fit: "cover",
-      }
-    )
-    .toFile(path.resolve(tempDirectory, resizedFile));
-  const filename = "composited_" + generateRandomString(10) + ".jpg";
-  await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
-    .composite([
-      {
-        input: path.resolve(tempDirectory, resizedFile),
-        top: numericModel === 3 ? 176 : 203,
-        left: numericModel === 3 ? 177 : 197,
+        gravity: "center",
       },
     ])
     .toFile(path.resolve(tempDirectory, filename));
