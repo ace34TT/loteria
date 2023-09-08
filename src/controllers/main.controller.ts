@@ -22,10 +22,8 @@ export const defaultHandler = async (req: Request, res: Response) => {
       "zeke/loteria:03843f4992ae68b5721d7e36473f7b66872769567652777fd62ee16bd806db50",
       {
         input: {
-          // mask: "https://5873-197-158-81-251.ngrok-free.app/api/download?filename=mask.jpg",
-          // image: `https://5873-197-158-81-251.ngrok-free.app/api/download?filename=${combinedFile}`,
-          mask: "https://backend-replicate.onrender.com/api/download?filename=mask.jpg",
-          image: `https://backend-replicate.onrender.com/api/download?filename=${combinedFile}`,
+          mask: `${process.env.BASE_URL}/api/download?filename=mask.jpg`,
+          image: `${process.env.BASE_URL}/api/download?filename=${combinedFile}`,
           negative_prompt: "letter , words , number , text",
           width: 512,
           height: 512,
