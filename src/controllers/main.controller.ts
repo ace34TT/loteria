@@ -7,12 +7,14 @@ import {
   combineResultWithModel,
   cropAndCompress,
   addText,
+  finaliseProcess,
 } from "../helpers/image.helper";
 import { deleteFile, uploadFileToFirebase } from "../services/firebase.service";
 
 export const defaultHandler = async (req: Request, res: Response) => {
   try {
     const prompt = req.body.prompt;
+    console.log(prompt);
     const originalname = req.file?.filename;
     console.log("====================starting new job====================");
     console.log("generating combined file");
@@ -37,11 +39,10 @@ export const defaultHandler = async (req: Request, res: Response) => {
     console.log("fetching generated image ");
     const replicateImage = await fetchImage("generated", output[0]);
     console.log("adding text");
-    const imageWithText = (await addText(
+    const imageWithText = (await finaliseProcess(
       replicateImage,
       req.body.name,
-      req.body.num,
-      "#424242"
+      req.body.num
     )) as string;
     const compressedFile = await cropAndCompress(imageWithText!);
     console.log("uploading file to firebase", compressedFile);
@@ -71,6 +72,7 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
     const prompt = req.body.prompt;
     const model = req.body.model;
     const previousResult = req.body.result;
+    const fullSize = req.body.fullSize;
     if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request :");
     const output_1: any = await replicate.run(
@@ -120,6 +122,7 @@ export const image2imageHandler = async (req: Request, res: Response) => {
     const model = req.body.model;
     const filename = req.file?.filename;
     const previousResult = req.body.result;
+    const fullSize = req.body.fullSize;
     if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request : ", filename);
     const output_1: any = await replicate.run(
