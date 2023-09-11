@@ -9,13 +9,13 @@ import {
   addText,
   finaliseProcess,
   combineResultWithModelWithSmallSize,
+  compress,
 } from "../helpers/image.helper";
 import { deleteFile, uploadFileToFirebase } from "../services/firebase.service";
 
 export const defaultHandler = async (req: Request, res: Response) => {
   try {
     const prompt = req.body.prompt;
-
     console.log(prompt);
     const originalname = req.file?.filename;
     console.log("====================starting new job====================");
@@ -69,14 +69,12 @@ export const defaultHandler = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
 export const promptOnlyHandler = async (req: Request, res: Response) => {
   try {
     const prompt = req.body.prompt;
-    const model = req.body.model;
+    const modelUrl = req.body.model;
     const previousResult = req.body.result;
     const fullSize = req.body.fullSize;
-    console.log("=======================>" + fullSize);
     if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request :");
     const output_1: any = await replicate.run(
@@ -97,7 +95,7 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
     );
     console.log("===> " + output_1[0]);
     const sdxlImage = await fetchImage("sdxl", output_1[0]);
-
+    const model = await fetchImage("model", modelUrl);
     console.log("second request : " + sdxlImage);
     const output_2: any = await replicate.run(
       "cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003",
@@ -113,10 +111,13 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
       fullSize === "full"
         ? await combineResultWithModel(model, remBg)
         : await combineResultWithModelWithSmallSize(model, remBg);
-    const url = await uploadFileToFirebase(result);
+    const finalResult = await compress(result);
+    const url = await uploadFileToFirebase(finalResult);
+    deleteImage(model);
     deleteImage(sdxlImage);
     deleteImage(remBg);
     deleteImage(result);
+    deleteFile(finalResult);
     return res.status(200).json({ url });
   } catch (error: any) {
     console.trace(error);
@@ -126,10 +127,11 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
 export const image2imageHandler = async (req: Request, res: Response) => {
   try {
     const prompt = req.body.prompt;
-    const model = req.body.model;
+    const modelUrl = req.body.model;
     const filename = req.file?.filename;
     const previousResult = req.body.result;
     const fullSize = req.body.fullSize;
+    console.log(previousResult);
     if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request : ", filename);
     const output_1: any = await replicate.run(
@@ -162,12 +164,19 @@ export const image2imageHandler = async (req: Request, res: Response) => {
     );
     console.log("===> " + output_2);
     const remBg = await fetchImage("rem_bg", output_2);
-    const result = await combineResultWithModel(model, remBg);
-    const url = await uploadFileToFirebase(result);
+    const model = await fetchImage("model", modelUrl);
+    const result =
+      fullSize === "full"
+        ? await combineResultWithModel(model, remBg)
+        : await combineResultWithModelWithSmallSize(model, remBg);
+    const finalResult = await compress(result);
+    const url = await uploadFileToFirebase(finalResult);
     deleteImage(filename!);
     deleteImage(sdxlImage);
+    deleteImage(model);
     deleteImage(remBg);
     deleteImage(result);
+    deleteFile(finalResult);
     return res.status(200).json({ url });
   } catch (error: any) {
     console.log(error);
@@ -193,8 +202,7 @@ export const addDetailsHandler = async (req: Request, res: Response) => {
       color
     )) as string;
     const url = await uploadFileToFirebase(finalResult);
-    const filename = getFileName(image);
-    // deleteFile(filename);
+    // const filename = getFileName(image);
     deleteImage(fetchedImage);
     deleteImage(finalResult);
     return res.status(200).json({ url });

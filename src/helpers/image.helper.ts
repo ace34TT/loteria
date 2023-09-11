@@ -28,28 +28,19 @@ export const combineImages = async (userImage: string) => {
   }
 };
 export const combineResultWithModel = async (model: any, subject: string) => {
-  console.log(
-    "============================full size============================"
-  );
-
-  var numericModel = Number(model);
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
-    .resize(
-      numericModel === 3 ? 1154 : 1124,
-      numericModel === 3 ? 1748 : 1704,
-      {
-        fit: "cover",
-      }
-    )
+    .resize(1124, 1704, {
+      fit: "cover",
+    })
     .toFile(path.resolve(tempDirectory, resizedFile));
   const filename = "composited_" + generateRandomString(10) + ".jpg";
-  await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
+  await sharp(path.resolve(tempDirectory, model))
     .composite([
       {
         input: path.resolve(tempDirectory, resizedFile),
-        top: numericModel === 3 ? 176 : 203,
-        left: numericModel === 3 ? 177 : 197,
+        top: 203,
+        left: 197,
       },
     ])
     .toFile(path.resolve(tempDirectory, filename));
@@ -60,7 +51,6 @@ export const combineResultWithModelWithSmallSize = async (
   model: any,
   subject: string
 ) => {
-  var numericModel = Number(model);
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
     .resize(654, 1248, {
@@ -68,7 +58,7 @@ export const combineResultWithModelWithSmallSize = async (
     })
     .toFile(path.resolve(tempDirectory, resizedFile));
   const filename = "composited_" + generateRandomString(10) + ".jpg";
-  await sharp(path.resolve(assetsDirectory, `models/loteria-bg00${model}.jpg`))
+  await sharp(path.resolve(tempDirectory, model))
     .composite([
       {
         input: path.resolve(tempDirectory, resizedFile),
@@ -162,4 +152,14 @@ export const finaliseProcess = async (
     out.on("error", reject);
     stream.pipe(out);
   });
+};
+
+export const compress = async (filename: string) => {
+  const name = "convert_compressed_" + generateRandomString(10) + ".jpg";
+  const outputFile = path.resolve(tempDirectory, name);
+  await sharp(path.resolve(tempDirectory, filename))
+    .jpeg({ quality: 80 })
+    .toFile(outputFile);
+  console.log("Image processed successfully!");
+  return name;
 };

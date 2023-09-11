@@ -15,9 +15,9 @@ admin.initializeApp({
 export const uploadFileToFirebase = async (filename: string) => {
   const bucket = admin.storage().bucket();
   await bucket.upload(path.resolve(tempDirectory + "/" + filename), {
-    destination: "images/" + filename,
+    destination: "loteria/images/" + filename,
   });
-  const fileRef = bucket.file("images/" + filename);
+  const fileRef = bucket.file("loteria/images/" + filename);
   await fileRef.makePublic();
   const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileRef.name}`;
   return publicUrl;
@@ -25,7 +25,7 @@ export const uploadFileToFirebase = async (filename: string) => {
 export const deleteFile = async (filename: string) => {
   try {
     const bucket = admin.storage().bucket();
-    const file = bucket.file("images/" + filename);
+    const file = bucket.file("loteria/images/" + filename);
     await file.delete();
   } catch (error: any) {
     console.log(error.message);
