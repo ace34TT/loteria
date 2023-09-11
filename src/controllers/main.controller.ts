@@ -113,11 +113,12 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
         : await combineResultWithModelWithSmallSize(model, remBg);
     const finalResult = await compress(result);
     const url = await uploadFileToFirebase(finalResult);
+    console.log(url);
     deleteImage(model);
     deleteImage(sdxlImage);
     deleteImage(remBg);
     deleteImage(result);
-    deleteFile(finalResult);
+    deleteImage(finalResult);
     return res.status(200).json({ url });
   } catch (error: any) {
     console.trace(error);
@@ -176,7 +177,7 @@ export const image2imageHandler = async (req: Request, res: Response) => {
     deleteImage(model);
     deleteImage(remBg);
     deleteImage(result);
-    deleteFile(finalResult);
+    deleteImage(finalResult);
     return res.status(200).json({ url });
   } catch (error: any) {
     console.log(error);
