@@ -15,6 +15,7 @@ import { deleteFile, uploadFileToFirebase } from "../services/firebase.service";
 export const defaultHandler = async (req: Request, res: Response) => {
   try {
     const prompt = req.body.prompt;
+
     console.log(prompt);
     const originalname = req.file?.filename;
     console.log("====================starting new job====================");
@@ -43,7 +44,8 @@ export const defaultHandler = async (req: Request, res: Response) => {
     const imageWithText = (await finaliseProcess(
       replicateImage,
       req.body.name,
-      req.body.num
+      req.body.num,
+      req.body.color
     )) as string;
     const compressedFile = await cropAndCompress(imageWithText!);
     console.log("uploading file to firebase", compressedFile);

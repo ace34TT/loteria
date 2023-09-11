@@ -131,7 +131,8 @@ export const cropAndCompress = async (filename: string) => {
 export const finaliseProcess = async (
   filename: string,
   text: string,
-  number: string
+  number: string,
+  color: string
 ) => {
   registerFont(
     path.resolve(assetsDirectory + "/futura/futura medium condensed bt.ttf"),
@@ -144,7 +145,7 @@ export const finaliseProcess = async (
   const image = await loadImage(path.resolve(tempDirectory, filename));
   ctx.drawImage(image, 0, 0, 1024, 1024);
   ctx.font = "64px Futura";
-  ctx.fillStyle = "#424242";
+  ctx.fillStyle = color;
   //
   ctx.fillText(number, 250, 128);
   //
