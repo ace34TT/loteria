@@ -40,20 +40,20 @@ export const defaultHandler = async (req: Request, res: Response) => {
     );
     console.log("fetching generated image ");
     const replicateImage = await fetchImage("generated", output[0]);
-    console.log("adding text");
-    const imageWithText = (await finaliseProcess(
-      replicateImage,
-      req.body.name,
-      req.body.num,
-      req.body.color
-    )) as string;
-    const compressedFile = await cropAndCompress(imageWithText!);
-    console.log("uploading file to firebase", compressedFile);
+    // console.log("adding text");
+    // const imageWithText = (await finaliseProcess(
+    //   replicateImage,
+    //   req.body.name,
+    //   req.body.num,
+    //   req.body.color
+    // )) as string;
+    const compressedFile = await cropAndCompress(replicateImage!);
+    // console.log("uploading file to firebase", compressedFile);
     const firebaseUrl = await uploadFileToFirebase(compressedFile!);
     await deleteImage(originalname!);
     await deleteImage(combinedFile!);
     await deleteImage(replicateImage);
-    await deleteImage(imageWithText!);
+    // await deleteImage(imageWithText!);
     await deleteImage(compressedFile!);
     console.log("====================job done====================");
     return res.status(200).json({
@@ -196,14 +196,18 @@ export const addDetailsHandler = async (req: Request, res: Response) => {
     const previousResult = req.body.result;
     if (previousResult) deleteFile(getFileName(previousResult));
     const fetchedImage = await fetchImage("firebase_", image);
-    const finalResult = (await addText(
-      fetchedImage,
-      name,
-      num,
-      color
-    )) as string;
+    let finalResult;
+    if (req.body.mode === "classic") {
+      finalResult = (await finaliseProcess(
+        fetchedImage,
+        req.body.name,
+        req.body.num,
+        req.body.color
+      )) as string;
+    } else {
+      finalResult = (await addText(fetchedImage, name, num, color)) as string;
+    }
     const url = await uploadFileToFirebase(finalResult);
-    // const filename = getFileName(image);
     deleteImage(fetchedImage);
     deleteImage(finalResult);
     return res.status(200).json({ url });

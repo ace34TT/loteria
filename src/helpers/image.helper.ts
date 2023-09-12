@@ -130,14 +130,14 @@ export const finaliseProcess = async (
       family: "Futura",
     }
   );
-  const canvas = createCanvas(1024, 1024);
+  const canvas = createCanvas(647, 1024);
   const ctx = canvas.getContext("2d");
   const image = await loadImage(path.resolve(tempDirectory, filename));
-  ctx.drawImage(image, 0, 0, 1024, 1024);
+  ctx.drawImage(image, 0, 0, 647, 1024);
   ctx.font = "64px Futura";
   ctx.fillStyle = color;
   //
-  ctx.fillText(number, 250, 128);
+  ctx.fillText(number, 90, 100);
   //
   const textWidth = ctx.measureText(text).width;
   ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height - 68);
