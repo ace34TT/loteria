@@ -34,7 +34,6 @@ export const getFileName = (url: string) => {
   const fileName = parts[parts.length - 1];
   return fileName;
 };
-
 //
 export const fetchImage = async (prefix: string, url: string) => {
   const response = await axios.get(url, { responseType: "stream" });

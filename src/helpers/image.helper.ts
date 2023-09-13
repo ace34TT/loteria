@@ -5,6 +5,7 @@ import { deleteImage, generateRandomString } from "./file.helper";
 import { createCanvas, loadImage, registerFont } from "canvas";
 const tempDirectory = path.resolve(__dirname, "../tmp/");
 const assetsDirectory = path.resolve(__dirname, "../assets/");
+
 export const combineImages = async (userImage: string) => {
   try {
     //
@@ -73,19 +74,23 @@ export const addText = async (
   filename: string,
   text: string,
   number: string,
-  color: string
+  color: string,
+  font: string
 ) => {
   registerFont(
-    path.resolve(assetsDirectory + "/futura/futura medium condensed bt.ttf"),
+    path.resolve(assetsDirectory + "/futura/Futura_Light_font.ttf"),
     {
-      family: "Futura",
+      family: "Futura_Light",
     }
   );
+  registerFont(path.resolve(assetsDirectory + "/futura/futur.ttf"), {
+    family: "Futura_Bold",
+  });
   const canvas = createCanvas(1500, 2100);
   const ctx = canvas.getContext("2d");
   const image = await loadImage(path.resolve(tempDirectory, filename));
   ctx.drawImage(image, 0, 0, 1500, 2100);
-  ctx.font = "98px Futura";
+  ctx.font = "98px " + (font === "bold" ? "Futura_Bold" : "Futura_Light");
   ctx.fillStyle = color;
   //
   ctx.fillText(number, 225, 310);
@@ -122,22 +127,27 @@ export const finaliseProcess = async (
   filename: string,
   text: string,
   number: string,
-  color: string
+  color: string,
+  font: string
 ) => {
   registerFont(
-    path.resolve(assetsDirectory + "/futura/futura medium condensed bt.ttf"),
+    path.resolve(assetsDirectory + "/futura/Futura_Light_font.ttf"),
     {
-      family: "Futura",
+      family: "Futura_Light",
     }
   );
+  registerFont(path.resolve(assetsDirectory + "/futura/futur.ttf"), {
+    family: "Futura_Bold",
+  });
+  console.log(font);
   const canvas = createCanvas(647, 1024);
   const ctx = canvas.getContext("2d");
   const image = await loadImage(path.resolve(tempDirectory, filename));
   ctx.drawImage(image, 0, 0, 647, 1024);
-  ctx.font = "64px Futura";
+  ctx.font = "64px " + (font === "bold" ? "Futura_Bold" : "Futura_Light");
   ctx.fillStyle = color;
   //
-  ctx.fillText(number, 90, 100);
+  ctx.fillText(number, 70, 120);
   //
   const textWidth = ctx.measureText(text).width;
   ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height - 68);
