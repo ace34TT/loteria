@@ -32,7 +32,7 @@ export const defaultHandler = async (req: Request, res: Response) => {
           width: 512,
           height: 512,
           prompt: prompt,
-          prompt_strength: 0.6,
+          prompt_strength: 0.75,
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
@@ -186,12 +186,14 @@ export const image2imageHandler = async (req: Request, res: Response) => {
 };
 export const addDetailsHandler = async (req: Request, res: Response) => {
   try {
-    const [image, name, num, color] = [
+    const [image, name, num, color, font] = [
       req.body.image,
       req.body.name,
       req.body.num,
       req.body.color,
+      req.body.font,
     ];
+
     console.log(image);
     const previousResult = req.body.result;
     if (previousResult) deleteFile(getFileName(previousResult));
@@ -200,12 +202,19 @@ export const addDetailsHandler = async (req: Request, res: Response) => {
     if (req.body.mode === "classic") {
       finalResult = (await finaliseProcess(
         fetchedImage,
-        req.body.name,
-        req.body.num,
-        req.body.color
+        name,
+        num,
+        color,
+        font
       )) as string;
     } else {
-      finalResult = (await addText(fetchedImage, name, num, color)) as string;
+      finalResult = (await addText(
+        fetchedImage,
+        name,
+        num,
+        color,
+        font
+      )) as string;
     }
     const url = await uploadFileToFirebase(finalResult);
     deleteImage(fetchedImage);
