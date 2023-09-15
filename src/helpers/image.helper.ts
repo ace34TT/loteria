@@ -55,7 +55,7 @@ export const combineResultWithModelWithSmallSize = async (
   const resizedFile = "resized _" + generateRandomString(10) + ".png";
   await sharp(path.resolve(tempDirectory, subject))
     .resize(654, 1248, {
-      fit: "cover",
+      fit: "inside",
     })
     .toFile(path.resolve(tempDirectory, resizedFile));
   const filename = "composited_" + generateRandomString(10) + ".jpg";

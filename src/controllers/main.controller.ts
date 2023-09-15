@@ -40,20 +40,11 @@ export const defaultHandler = async (req: Request, res: Response) => {
     );
     console.log("fetching generated image ");
     const replicateImage = await fetchImage("generated", output[0]);
-    // console.log("adding text");
-    // const imageWithText = (await finaliseProcess(
-    //   replicateImage,
-    //   req.body.name,
-    //   req.body.num,
-    //   req.body.color
-    // )) as string;
     const compressedFile = await cropAndCompress(replicateImage!);
-    // console.log("uploading file to firebase", compressedFile);
     const firebaseUrl = await uploadFileToFirebase(compressedFile!);
     await deleteImage(originalname!);
     await deleteImage(combinedFile!);
     await deleteImage(replicateImage);
-    // await deleteImage(imageWithText!);
     await deleteImage(compressedFile!);
     console.log("====================job done====================");
     return res.status(200).json({
@@ -87,7 +78,7 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
           prompt:
             prompt +
             " inspired by Cyril Rolando, minimalist illustration, loteria style, dan mumford and alex grey style",
-          prompt_strength: 0.6,
+          prompt_strength: 0.75,
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
@@ -146,7 +137,7 @@ export const image2imageHandler = async (req: Request, res: Response) => {
             prompt +
             " inspired by Cyril Rolando, minimalist illustration, loteria style, dan mumford and alex grey style",
           image: `${process.env.BASE_URL}/api/download?filename=${filename}`,
-          prompt_strength: 0.6,
+          prompt_strength: 0.75,
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
