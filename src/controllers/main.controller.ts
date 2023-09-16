@@ -20,6 +20,8 @@ export const defaultHandler = async (req: Request, res: Response) => {
     const originalname = req.file?.filename;
     console.log("====================starting new job====================");
     console.log("generating combined file");
+    console.log("prompt strength : " + Number(req.body.promptStrength));
+
     const combinedFile = await combineImages(originalname!);
     console.log("making request");
     const output: any = await replicate.run(
@@ -32,7 +34,7 @@ export const defaultHandler = async (req: Request, res: Response) => {
           width: 512,
           height: 512,
           prompt: prompt,
-          prompt_strength: 0.75,
+          prompt_strength: req.body.promptStrength,
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
@@ -66,8 +68,10 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
     const modelUrl = req.body.model;
     const previousResult = req.body.result;
     const fullSize = req.body.fullSize;
+    const promptStrength = req.body.promptStrength;
     if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request :");
+    console.log("prompt strength : " + Number(req.body.promptStrength));
     const output_1: any = await replicate.run(
       "stability-ai/sdxl:d830ba5dabf8090ec0db6c10fc862c6eb1c929e1a194a5411852d25fd954ac82",
       {
@@ -78,7 +82,7 @@ export const promptOnlyHandler = async (req: Request, res: Response) => {
           prompt:
             prompt +
             " inspired by Cyril Rolando, minimalist illustration, loteria style, dan mumford and alex grey style",
-          prompt_strength: 0.75,
+          prompt_strength: Number(promptStrength),
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
@@ -126,6 +130,7 @@ export const image2imageHandler = async (req: Request, res: Response) => {
     console.log(previousResult);
     if (previousResult) deleteFile(getFileName(previousResult));
     console.log("first request : ", filename);
+    console.log("prompt strength : " + Number(req.body.promptStrength));
     const output_1: any = await replicate.run(
       "stability-ai/sdxl:d830ba5dabf8090ec0db6c10fc862c6eb1c929e1a194a5411852d25fd954ac82",
       {
@@ -137,7 +142,7 @@ export const image2imageHandler = async (req: Request, res: Response) => {
             prompt +
             " inspired by Cyril Rolando, minimalist illustration, loteria style, dan mumford and alex grey style",
           image: `${process.env.BASE_URL}/api/download?filename=${filename}`,
-          prompt_strength: 0.75,
+          prompt_strength: req.body.promptStrength,
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
