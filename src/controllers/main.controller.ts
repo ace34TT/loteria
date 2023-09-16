@@ -34,7 +34,7 @@ export const defaultHandler = async (req: Request, res: Response) => {
           width: 512,
           height: 512,
           prompt: prompt,
-          prompt_strength: req.body.promptStrength,
+          prompt_strength: Number(req.body.promptStrength),
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
