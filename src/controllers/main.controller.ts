@@ -142,7 +142,7 @@ export const image2imageHandler = async (req: Request, res: Response) => {
             prompt +
             " inspired by Cyril Rolando, minimalist illustration, loteria style, dan mumford and alex grey style",
           image: `${process.env.BASE_URL}/api/download?filename=${filename}`,
-          prompt_strength: req.body.promptStrength,
+          prompt_strength: Number(req.body.promptStrength),
           num_inference_steps: 30,
           scheduler: "K_EULER",
         },
