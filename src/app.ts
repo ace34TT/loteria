@@ -3,11 +3,7 @@ import bodyParser from "body-parser";
 import { getFilePath } from "./helpers/file.helper";
 import path from "path";
 import { MainRoutes } from "./routes/main.routes";
-import {
-  addText,
-  combineImages,
-  combineResultWithModel,
-} from "./helpers/image.helper";
+
 const app = express();
 app.use((_req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
