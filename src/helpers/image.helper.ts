@@ -77,13 +77,10 @@ export const addText = async (
   color: string,
   font: string
 ) => {
-  registerFont(
-    path.resolve(assetsDirectory + "/futura/Futura_Light_font.ttf"),
-    {
-      family: "Futura_Light",
-    }
-  );
-  registerFont(path.resolve(assetsDirectory + "/futura/futur.ttf"), {
+  registerFont(path.resolve(assetsDirectory, "futura/Futura_Light_font.ttf"), {
+    family: "Futura_Light",
+  });
+  registerFont(path.resolve(assetsDirectory, "futura/futur.ttf"), {
     family: "Futura_Bold",
   });
   const canvas = createCanvas(1500, 2100);
@@ -130,13 +127,10 @@ export const finaliseProcess = async (
   color: string,
   font: string
 ) => {
-  registerFont(
-    path.resolve(assetsDirectory + "/futura/Futura_Light_font.ttf"),
-    {
-      family: "Futura_Light",
-    }
-  );
-  registerFont(path.resolve(assetsDirectory + "/futura/futur.ttf"), {
+  registerFont(path.resolve(assetsDirectory, "futura/Futura_Light_font.ttf"), {
+    family: "Futura_Light",
+  });
+  registerFont(path.resolve(assetsDirectory, "futura/futur.ttf"), {
     family: "Futura_Bold",
   });
   console.log(font);
