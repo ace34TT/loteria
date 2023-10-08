@@ -77,12 +77,12 @@ export const addText = async (
   color: string,
   font: string
 ) => {
-  // registerFont(path.resolve(assetsDirectory, "futura/Futura_Light_font.ttf"), {
-  //   family: "Futura_Light",
-  // });
-  // registerFont(path.resolve(assetsDirectory, "futura/futur.ttf"), {
-  //   family: "Futura_Bold",
-  // });
+  registerFont(path.resolve(assetsDirectory, "futura/Futura_Light_font.ttf"), {
+    family: "Futura_Light",
+  });
+  registerFont(path.resolve(assetsDirectory, "futura/futur.ttf"), {
+    family: "Futura_Bold",
+  });
   const canvas = createCanvas(1500, 2100);
   const ctx = canvas.getContext("2d");
   const image = await loadImage(path.resolve(tempDirectory, filename));
@@ -127,12 +127,12 @@ export const finaliseProcess = async (
   color: string,
   font: string
 ) => {
-  // registerFont(path.resolve(assetsDirectory, "futura/Futura_Light_font.ttf"), {
-  //   family: "Futura_Light",
-  // });
-  // registerFont(path.resolve(assetsDirectory, "futura/futur.ttf"), {
-  //   family: "Futura_Bold",
-  // });
+  registerFont(path.resolve(assetsDirectory, "futura/Futura_Light_font.ttf"), {
+    family: "Futura_Light",
+  });
+  registerFont(path.resolve(assetsDirectory, "futura/futur.ttf"), {
+    family: "Futura_Bold",
+  });
   console.log(font);
   const canvas = createCanvas(647, 1024);
   const ctx = canvas.getContext("2d");
